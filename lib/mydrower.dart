@@ -120,6 +120,7 @@ class DrawrApp extends StatelessWidget {
   }
 }
 */
+import 'package:application_firebase1/VocalAssistant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -255,7 +256,12 @@ class _DrawrAppState extends State<DrawrApp> {
             title: const Text('Vocal Assistant (LLM)'),
             leading: const Icon(Icons.mic, color: Colors.purple),
             onTap: () {
-              // Ajouter la logique de navigation ici
+               Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const VocalAssistant(),
+                    ),
+                  );
             },
           ),
           ListTile(
@@ -269,7 +275,7 @@ class _DrawrAppState extends State<DrawrApp> {
           const Divider(), // Séparateur pour une meilleure visibilité
           
           // Footer section
-          ListTile(
+          /*ListTile(
             title: const Text('Settings'),
             leading: const Icon(Icons.settings, color: Colors.grey),
             onTap: () {
@@ -282,7 +288,7 @@ class _DrawrAppState extends State<DrawrApp> {
             onTap: () {
               // Ajouter la logique de déconnexion ici
             },
-          ),
+          ),*/
         ],
       ),
     );

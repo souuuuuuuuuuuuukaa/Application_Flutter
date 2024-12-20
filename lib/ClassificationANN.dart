@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 class ClassificationANN extends StatelessWidget {
   const ClassificationANN({super.key});
@@ -34,27 +34,21 @@ class ClassificationANN extends StatelessWidget {
       ),
     );
   }
-}
+}*/
 
 
-
-
-
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import 'dart:io';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ClassificationANN extends StatefulWidget {
   const ClassificationANN({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ClassificationANNState createState() => _ClassificationANNState();
 }
-
-
 
 class _ClassificationANNState extends State<ClassificationANN> {
   File? _image;
@@ -67,20 +61,18 @@ class _ClassificationANNState extends State<ClassificationANN> {
     loadModel();
   }
 
-  // Load the pre-trained model
   loadModel() async {
     try {
       String? res = await Tflite.loadModel(
-        model: "assets/Bestmodel.tflite", // Make sure the model is in the assets directory
-        labels: "assets/labels.txt", // If you have label file
+        model: "assets/Models/ANN_model.tflite", // Mettre à jour le chemin
+       // labels: "assets/Models/labels.txt", // Mettre à jour le chemin
       );
-      print(res);
-    } on PlatformException {
-      print("Failed to load model.");
+      print("Modèle chargé : $res");
+    } catch (e) {
+      print("Erreur lors du chargement du modèle : $e");
     }
   }
 
-  // Function to pick image from gallery or camera
   Future getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -93,14 +85,13 @@ class _ClassificationANNState extends State<ClassificationANN> {
     }
   }
 
-  // Function to preprocess and classify image
   classifyImage(File image) async {
     try {
       var result = await Tflite.runModelOnImage(
         path: image.path,
-        imageMean: 0.0,  // Adjust for your model's input
-        imageStd: 255.0,
-        numResults: 2,
+        imageMean: 127.5,
+        imageStd: 127.5,
+        numResults: 3,
         threshold: 0.1,
         asynch: true,
       );
@@ -110,13 +101,18 @@ class _ClassificationANNState extends State<ClassificationANN> {
           _result = result[0]["label"];
           _confidence = result[0]["confidence"];
         });
+        print("Prédiction : $_result avec une confiance de ${_confidence * 100}%");
+      } else {
+        setState(() {
+          _result = "Aucun résultat trouvé.";
+          _confidence = 0.0;
+        });
       }
-    } on PlatformException {
-      print("Failed to run model.");
+    } catch (e) {
+      print("Erreur lors de l'exécution du modèle : $e");
     }
   }
 
-  // Dispose model when done
   @override
   void dispose() {
     super.dispose();
@@ -127,7 +123,7 @@ class _ClassificationANNState extends State<ClassificationANN> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Fashion MNIST Classifier"),
+        title: const Text("ANN Image Classifier"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -136,12 +132,19 @@ class _ClassificationANNState extends State<ClassificationANN> {
           children: <Widget>[
             _image == null
                 ? const Text("Aucune image sélectionnée")
-                : Image.file(
-                    _image!,
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
-                  ),
+                : kIsWeb
+                    ? Image.network(
+                        _image!.path,
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.file(
+                        _image!,
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
+                      ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: getImage,
@@ -149,9 +152,9 @@ class _ClassificationANNState extends State<ClassificationANN> {
             ),
             const SizedBox(height: 20),
             if (_result.isNotEmpty) ...[
-              const Text("Résultat de la prédiction:"),
-              Text("Classe: $_result", style: const TextStyle(fontSize: 18)),
-              Text("Confiance: ${(_confidence * 100).toStringAsFixed(2)}%", style: const TextStyle(fontSize: 18)),
+              const Text("Résultat de la prédiction :"),
+              Text("Classe : $_result", style: const TextStyle(fontSize: 18)),
+              Text("Confiance : ${(_confidence * 100).toStringAsFixed(2)}%", style: const TextStyle(fontSize: 18)),
             ],
           ],
         ),
@@ -159,4 +162,3 @@ class _ClassificationANNState extends State<ClassificationANN> {
     );
   }
 }
-*/
